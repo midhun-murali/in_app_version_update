@@ -1,12 +1,13 @@
-name: progressive_fab
-description: "A customizable Progressive Floating Action Button (FAB) for Flutter."
-version: 0.0.5
-homepage: https://github.com/midhun-murali/Progressive-FAB
-repository: https://github.com/midhun-murali/Progressive-FAB
-issue_tracker: https://github.com/midhun-murali/Progressive-FAB/issues
-documentation: https://github.com/midhun-murali/Progressive-FAB#readme
+name: in_app_version_update
+author: Midhun Murali <
+description: "In-app update helper for Flutter - supports Android immediate/flexible updates and an iOS update dialog with customizable text and install status stream."
+version: 0.0.1
+homepage: https://github.com/midhun-murali/in_app_version_update
+repository: https://github.com/midhun-murali/in_app_version_update
+issue_tracker: https://github.com/midhun-murali/in_app_version_update/issues
+documentation: https://github.com/midhun-murali/in_app_version_update#readme
 screenshots:
-  - path: example/progressive_fab_example.png
+  - path: example/in_app_version_update_example.png
     description: "This is a description of my screenshot."
 
 environment:
