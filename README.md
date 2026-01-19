@@ -163,12 +163,6 @@ Notes and platform specifics
 - Android in-app updates require the Play Store and a real device for full flow validation. Tests intentionally avoid running Play Core flows and instead validate mapping and UI.
 - iOS App Store lookup uses a network request to Apple's public lookup API; use a short timeout and handle network failures gracefully in your app.
 
-## Contributing and development tips
-
-- Keep API surface small and well-documented. Add unit tests for any new logic (version comparison, mapping, error handling).
-- When changing behavior around flexible updates, add tests that ensure the helper either calls `completeFlexibleUpdate()` automatically (when requested) or exposes the `downloaded` status through the stream/callback.
-- Add widget tests that call `presentIosUpdateDialog` to verify localization/custom text behavior.
-
 ## License
 
 This project is provided under the terms of the LICENSE file in the repository.
