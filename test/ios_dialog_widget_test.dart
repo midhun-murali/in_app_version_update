@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:progressive_fab/in_app_version_update.dart';
+import 'package:in_app_version_update/in_app_version_update.dart';
 
 void main() {
   testWidgets('presentIosUpdateDialog shows dialog with provided texts and calls onUpdatePressed', (WidgetTester tester) async {

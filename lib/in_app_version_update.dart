@@ -16,6 +16,7 @@
 /// final updater = InAppVersionUpdate(iosAppId: '123456789');
 /// await updater.checkForUpdate(context);
 /// ```
+library;
 
 import 'dart:async';
 import 'dart:convert';
