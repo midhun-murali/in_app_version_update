@@ -5,9 +5,13 @@ homepage: https://github.com/midhun-murali/in_app_version_update
 repository: https://github.com/midhun-murali/in_app_version_update
 issue_tracker: https://github.com/midhun-murali/in_app_version_update/issues
 documentation: https://github.com/midhun-murali/in_app_version_update#readme
-#screenshots:
-#  - path: example/in_app_version_update_example.png
-#    description: "This is a description of my screenshot."
+screenshots:
+  - path: example/screenshots/android_example_one.webp
+    description: "This is a description of Android example screenshot one."
+  - path: example/screenshots/android_example_two.webp
+    description: "This is a description of Android example screenshot two."
+  - path: example/screenshots/ios_example.png
+    description: "This is a description of iOS example screenshot."
 
 environment:
   sdk: ^3.10.4
