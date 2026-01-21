@@ -13,3 +13,7 @@ All notable changes to this project will be documented in this file.
 - Made ios appid optional.
 - Added option to check update on either one of the platforms.
 - Example screenshots added.
+
+## [0.0.3] - 2026-21-01
+### Added
+- Attached screenshots on Readme.

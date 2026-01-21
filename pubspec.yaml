@@ -1,6 +1,6 @@
 name: in_app_version_update
 description: "In-app update helper for Flutter - supports Android immediate/flexible updates and an iOS update dialog with customizable text and install status stream."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/midhun-murali/in_app_version_update
 repository: https://github.com/midhun-murali/in_app_version_update
 issue_tracker: https://github.com/midhun-murali/in_app_version_update/issues
