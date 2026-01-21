@@ -17,9 +17,9 @@ A lightweight Flutter helper to detect and run app updates on Android (Play Inâ€
 
 This package wraps platform-specific update flows and provides a compact, testable API so host apps don't need to depend on `in_app_update` or implement App Store lookups themselves.
 
-![Android Example One](example/screenshots/android_example_one.webp)
-![Android Example One](example/screenshots/android_example_two.webp)
-![iOS Example](example/screenshots/ios_example.png)
+![Android Example One](screenshots/android_example_one.webp)
+![Android Example One](screenshots/android_example_two.webp)
+![iOS Example](screenshots/ios_example.png)
 
 Key capabilities
 
