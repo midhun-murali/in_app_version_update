@@ -26,6 +26,9 @@ Key capabilities
 - iOS
   - App Store lookup by app id and an optional, testable Cupertino update dialog.
   - All dialog texts are configurable via parameters so host apps can localize or customize wording.
+  - `iosAppId` is optional — if your app only targets Android you can omit it. When iOS flows are used the id must be provided.
+- Platform control
+    - `checkForUpdate` accepts `checkAndroid` and `checkIos` flags so host apps can selectively run platform checks; both default to `true`.
 
 The repository includes an `example/` app demonstrating immediate and flexible flows, stream and callback usage, auto completion, and iOS dialog usage. Unit tests cover version comparison and mapping logic; widget tests verify the iOS dialog and example screens.
 
@@ -118,30 +121,39 @@ Future<void> presentIosDialogExample(BuildContext context) async {
 }
 ```
 
-## API reference (short)
+## API reference
 
 - Constructor
-  - `InAppVersionUpdate({ required String iosAppId, Duration httpTimeout = const Duration(seconds: 10) })`
-    - iosAppId: App Store ID used for iOS version lookup.
-    - httpTimeout: timeout for App Store HTTP requests.
+    - `InAppVersionUpdate({ String? iosAppId, Duration httpTimeout = const Duration(seconds: 10) })`
+        - `iosAppId`: Optional numeric App Store id used for iOS lookups. Omit when you only need Android.
+        - `httpTimeout`: network timeout for App Store lookup requests.
 
-- Main methods
-  - `Future<void> checkForUpdate(BuildContext context, { AndroidUpdateType androidUpdateType = AndroidUpdateType.immediate, bool autoCompleteFlexible = true, void Function(InstallStatus)? onInstallStatus, String? iosDialogTitle, String? iosDialogContent, String? iosLaterButtonText, String? iosUpdateNowButtonText })`
-    - Checks for updates and starts platform-appropriate flows.
-    - On Android: chooses immediate or flexible flow. For flexible flows, if `autoCompleteFlexible` is true the helper auto-calls `completeFlexibleUpdate()` when the download completes; otherwise it exposes status via stream and callback.
-    - On iOS: performs App Store lookup and presents a dialog if a newer version exists. Dialog texts default to sensible values and can be overridden.
+- checkForUpdate
+    - `Future<void> checkForUpdate(BuildContext context, { AndroidUpdateType androidUpdateType = AndroidUpdateType.immediate, bool autoCompleteFlexible = true, void Function(InstallStatus)? onInstallStatus, String iosDialogTitle = 'Update available', String iosDialogContent = 'A newer version of this app is available on the App Store.', String iosLaterButtonText = 'Later', String iosUpdateNowButtonText = 'Update now', bool checkAndroid = true, bool checkIos = true })`
+        - `androidUpdateType`: choose `AndroidUpdateType.immediate` or `.flexible`.
+        - `autoCompleteFlexible`: When `true` the helper automatically calls `completeFlexibleUpdate()` once a flexible update has been downloaded. If `false`, the host app must call `completeFlexibleUpdate()` when appropriate.
+        - `onInstallStatus`: Optional callback that receives mapped `InstallStatus` values during flexible update lifecycle. If used, the helper keeps an internal subscription until `stopInstallStatusCallback()` is called.
+        - `iosDialogTitle`, `iosDialogContent`, `iosLaterButtonText`, `iosUpdateNowButtonText`: All dialog texts are configurable; they default to sensible values.
+        - `checkAndroid`, `checkIos`: Per-platform boolean flags (both default to `true`). Use these to skip checks on a platform.
 
-  - `Stream<InstallStatus> get installUpdateStream`
-    - Emits mapped install statuses (public `InstallStatus` enum) so host apps can react to download, installing, failed, or unknown states.
+- installUpdateStream
+    - `Stream<InstallStatus> get installUpdateStream`
+        - Emits mapped `InstallStatus` values (enum documented below). Use this when you want host-controlled completion and progress UI.
 
-  - `Future<void> completeFlexibleUpdate()`
-    - Tells Play to install a downloaded flexible update (call this when the user confirms restart/apply).
+- completeFlexibleUpdate
+    - `Future<void> completeFlexibleUpdate()` — calls Play's API to install a downloaded flexible update.
 
-  - `Future<void> stopInstallStatusCallback()`
-    - Cancels the internal callback subscription if `onInstallStatus` was provided to `checkForUpdate`.
+- stopInstallStatusCallback
+    - `Future<void> stopInstallStatusCallback()` — cancels the internal subscription when `onInstallStatus` was provided.
 
-  - `static bool isStoreVersionNewer(String storeVersion, String currentVersion)`
-    - Compares semantic-style version strings and returns true if the store version is newer than the current app version. Unit-tested.
+- presentIosUpdateDialog
+    - `Future<void> presentIosUpdateDialog(BuildContext context, { String title = 'Update available', String content = 'A newer version of this app is available on the App Store.', String laterText = 'Later', String updateNowText = 'Update now', VoidCallback? onUpdatePressed })`
+        - Presents the iOS update dialog UI immediately (no network checks). Useful for widget tests or when the host app wants to control the Update action. If `iosAppId` is not provided and `onUpdatePressed` is `null` the method will log a debug message and return without showing the dialog.
+
+Enums
+
+- `AndroidUpdateType { immediate, flexible }`
+- `InstallStatus { unknown, pending, downloading, downloaded, installing, installed, failed, canceled }`
 
 ## Testing
 

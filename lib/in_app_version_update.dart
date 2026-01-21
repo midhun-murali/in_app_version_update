@@ -110,7 +110,9 @@ InstallStatus mapInstallStatus(in_app_update.InstallStatus s) {
 ///   `installUpdateStream` or providing an `onInstallStatus` callback.
 class InAppVersionUpdate {
   // iOS App Store app id used to open the App Store page directly
-  final String iosAppId;
+  // Optional: if your package is only used for Android updates you may omit
+  // this value. When iOS flows are used the id must be provided.
+  final String? iosAppId;
 
   // Timeout used for the HTTP App Store lookup.
   final Duration httpTimeout;
@@ -125,7 +127,7 @@ class InAppVersionUpdate {
   /// - [iosAppId]: the numeric App Store app id (required for iOS lookups).
   /// - [httpTimeout]: optional lookup timeout for network requests to the
   ///   App Store lookup API. Defaults to 10 seconds.
-  InAppVersionUpdate({required this.iosAppId, this.httpTimeout = const Duration(seconds: 10)});
+  InAppVersionUpdate({this.iosAppId, this.httpTimeout = const Duration(seconds: 10)});
 
   /// Stream of install/update statuses for flexible Android updates.
   ///
@@ -199,10 +201,22 @@ class InAppVersionUpdate {
     String iosDialogContent = 'A newer version of this app is available on the App Store.',
     String iosLaterButtonText = 'Later',
     String iosUpdateNowButtonText = 'Update now',
+    // New optional flags to let the host app restrict checks to only one
+    // platform. By default both are true to preserve current behavior.
+    bool checkAndroid = true,
+    bool checkIos = true,
   }) async {
     if (Platform.isAndroid) {
+      if (!checkAndroid) {
+        if (kDebugMode) debugPrint('Skipping Android update check (disabled by parameter)');
+        return;
+      }
       await _handleAndroidUpdate(androidUpdateType, autoCompleteFlexible: autoCompleteFlexible, onInstallStatus: onInstallStatus);
     } else if (Platform.isIOS) {
+      if (!checkIos) {
+        if (kDebugMode) debugPrint('Skipping iOS update check (disabled by parameter)');
+        return;
+      }
       await _handleIosUpdate(
         context,
         title: iosDialogTitle,
@@ -372,6 +386,10 @@ class InAppVersionUpdate {
   }
 
   Future<bool> _isIosUpdateAvailable() async {
+    if (iosAppId == null || iosAppId!.isEmpty) {
+      if (kDebugMode) debugPrint('iOS App ID not provided; skipping iOS update availability check');
+      return false;
+    }
     final packageInfo = await PackageInfo.fromPlatform();
     final currentVersion = packageInfo.version.trim();
 
@@ -399,6 +417,11 @@ class InAppVersionUpdate {
 
   // Attempts to launch the App Store page for this app.
   Future<void> _openAppStorePage() async {
+    if (iosAppId == null || iosAppId!.isEmpty) {
+      if (kDebugMode) debugPrint('Cannot open App Store page: iosAppId not provided');
+      return;
+    }
+
     final Uri itmsUri = Uri.parse('itms-apps://itunes.apple.com/app/id$iosAppId');
     final Uri httpsUri = Uri.parse('https://apps.apple.com/app/id$iosAppId');
 
@@ -429,7 +452,15 @@ class InAppVersionUpdate {
     String updateNowText = 'Update now',
     VoidCallback? onUpdatePressed,
   }) async {
-    if (!context.mounted) return;
+    // If no iosAppId is present and the host didn't provide an onUpdatePressed
+    // callback there's nothing sensible to do when the user taps Update. Log
+    // and return instead of attempting to open a malformed URL.
+    if (iosAppId == null || iosAppId!.isEmpty) {
+      if (onUpdatePressed == null) {
+        if (kDebugMode) debugPrint('presentIosUpdateDialog called but iosAppId is not set and no onUpdatePressed callback was provided');
+        return;
+      }
+    }
 
     await showCupertinoDialog(
       context: context,
